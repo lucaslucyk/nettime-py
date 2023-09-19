@@ -8,6 +8,7 @@ Python API client for netTime (SPEC, SA).
 ## Project Status
 :warning: **Warning**: This project is currently in development phase.
 
+This project is in an early stage of development and may contain bugs. It is not recommended for use in production environments.
 
 ## Why use `nettime-py`?
 - :zap: __Fast to code__: Increase the speed to develop integrations features.
@@ -42,6 +43,8 @@ with NetTimeAPI(url='<HOST>', username='<USERNAME>', password='<PASSWORD>') as c
 print(employees)
 ```
 
+## Contributions and Feedback
+I would love to receive contributions and feedback! If you'd like to get involved, please contact me through one of the contact methods in my [Profile](https://github.com/lucaslucyk).
 
 ## License
 This project is licensed under the terms of the GNU GPLv3 license.
