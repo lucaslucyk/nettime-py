@@ -23,7 +23,9 @@ class Container(Generic[ModelType], ABC):
         super().__init__()
         self._client = client
         self._page_size = page_size
-        self._base_path = '/api/container/elements/'
+        self._base_path = '/api/container/'
+        self._list_prefix = 'elements/'
+        self._action_prexix = 'action/exec/'
 
     
     @property
@@ -44,13 +46,23 @@ class Container(Generic[ModelType], ABC):
 
 
     @property
-    def path_url(self) -> str:
-        return self._base_path + self.path_attribute
+    def list_path(self) -> str:
+        return self._base_path + self._list_prefix + self.path_attribute
 
 
     @property
-    def url(self) -> str:
-        return self._client.url + self.path_url
+    def action_path(self) -> str:
+        return self._base_path + self._action_prexix + self.path_attribute
+
+
+    @property
+    def list_url(self) -> str:
+        return self._client.url + self.list_path
+
+
+    @property
+    def action_url(self) -> str:
+        return self._client.url + self.action_path
     
 
     @property
@@ -119,7 +131,7 @@ class Container(Generic[ModelType], ABC):
         _params.update(params)
 
         # get response from api client
-        response = self._client.get(url=self.url, params=_params, **kwargs)
+        response = self._client.get(url=self.list_url, params=_params, **kwargs)
 
         # return paginator
         return Pagination(

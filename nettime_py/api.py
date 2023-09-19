@@ -6,8 +6,10 @@ from requests import Session, Response
 from requests.exceptions import HTTPError
 from pydantic import validate_call
 
+
 from .exceptions import AuthException, ConfigException, UrlException
 from .containers.employees import Employee
+from .containers.readers import Reader
 from .config import Defaults
 from .schemas.app_settings import AppSettings
 from .schemas.app_index import AppIndex
@@ -362,3 +364,8 @@ class NetTimeAPI:
     @property
     def employees(self) -> Employee:
         return Employee(client=self)
+
+
+    @property
+    def readers(self) -> Reader:
+        return Reader(client=self)
