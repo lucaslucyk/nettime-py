@@ -79,6 +79,9 @@ class NetTimeAPI:
         return self.url != o.url or self._username != o._username
 
     def _config_session(self) -> None:
+        """Apply default headers, aditional inner headers and session config
+        """
+
         # apply default headers
         self.session.headers.update(self._defaults.SESSION_HEADERS)
         
@@ -93,6 +96,11 @@ class NetTimeAPI:
 
 
     def _check_config(self) -> None:
+        """Check inner params at instance creation.
+
+        Raises:
+            ConfigException: If params missing
+        """
         if not self.url:
             raise ConfigException("Missing url in API creation")
         
@@ -126,6 +134,12 @@ class NetTimeAPI:
 
     
     def _set_user_session(self, access_token: str) -> None:
+        """Set data associated with the user session
+
+        Args:
+            access_token (str): Token received by login strategy.
+        """
+
         self._access_token = access_token
         self.session.headers.update({
             "Cookie": f"sessionID={access_token}; i18next=es"
@@ -236,6 +250,15 @@ class NetTimeAPI:
     
 
     def _discover_task(self, result: Any) -> Any:
+        """Checks if the result is of type task and waits for it to finish 
+        before returning its result.
+
+        Args:
+            result (Any): JSON response.
+
+        Returns:
+            Any: JSON response or JSON Task result.
+        """
         if isinstance(result, dict) and result.get('taskId', None):
             result = self.get_task_response(task_id=result.get('taskId'))
 

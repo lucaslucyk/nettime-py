@@ -64,7 +64,16 @@ class Container(Generic[ModelType], ABC):
     
 
     def parse_object_as(self, kind: Any, data: Any) -> Any:
-        # adapter = TypeAdapter(kind)
+        """Parse python object to pydantic model type
+
+        Args:
+            kind (Any): Pydantic model type
+            data (Any): Python object
+
+        Returns:
+            Any: Pydantic model type instance
+        """
+        
         return TypeAdapter(kind).validate_python(data)
         
     
@@ -75,8 +84,26 @@ class Container(Generic[ModelType], ABC):
         query: Query = Query(),
         search: str = "",
         desc: bool = False,
-        params: dict = {}
+        params: dict = {},
+        **kwargs
     ) -> Pagination[ModelType]:
+        """List elements of a container
+
+        Args:
+            offset (int, optional): Start offset. Defaults to 0.
+            query (Query, optional):
+                Fields and filter expression. Defaults to Query().
+            search (str, optional):
+                Arbitrary text to search in all fields. Defaults to "".
+            desc (bool, optional): Desc param. Defaults to False.
+            params (dict, optional):
+                Custom params to send to `client.get` method. Defaults to {}.
+
+        Returns:
+            Pagination[ModelType]: Pagination of instanced ModelType.
+        """
+
+        # update custom inner params with params and page keys
         params.update({
             # pagination
             OFFSET_PARAM_NAME: offset,
@@ -86,9 +113,15 @@ class Container(Generic[ModelType], ABC):
             "search": search,
             "desc": str(desc)
         })
+
+        # create params from container base_params and update with inner
         _params = self.base_params
         _params.update(params)
-        response = self._client.get(url=self.url, params=_params)
+
+        # get response from api client
+        response = self._client.get(url=self.url, params=_params, **kwargs)
+
+        # return paginator
         return Pagination(
             items=self.parse_object_as(
                 kind=List[self.schema_class],
@@ -109,20 +142,44 @@ class Container(Generic[ModelType], ABC):
         desc: bool = False,
         params: dict = {},
         page: Optional[Pagination] = None
-    ) -> Generator[ModelType, Any, None]:        
+    ) -> Generator[ModelType, Any, None]:
+        """Get all elements of a container using `list` method.
+
+        Args:
+            query (Query, optional):
+                Fields and filter expression. Defaults to Query().
+            search (str, optional):
+                Arbitrary text to search in all fields. Defaults to "".
+            desc (bool, optional): Desc param. Defaults to False.
+            params (dict, optional):
+                Custom params to send to `client.get` method. Defaults to {}.
+            page (Optional[Pagination], optional):
+                Optional Pagination object to start. Defaults to None.
+
+        Yields:
+            Generator[ModelType, Any, None]: Iterator of ModelType instances.
+        """
+
         if not page:
+            # create paginator
             page = self.list(
                 query=query,
                 search=search,
                 desc=desc,
                 params=params
             )
+            # yield elements
             for item in page: yield item
 
+        # get next page
         page = page.next_page()
+
+        # return -exit- if page is empty
         if not page: return
+        # yield elements if not
         for item in page: yield item
         
+        # try to yield next page
         yield from self.all(
             query=query,
             search=search,
