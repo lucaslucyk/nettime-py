@@ -5,10 +5,12 @@ from typing import Any, Optional, Union, Dict
 from requests import Session, Response
 from requests.exceptions import HTTPError
 from pydantic import validate_call
+
 from .exceptions import AuthException, ConfigException, UrlException
 from .containers.employees import Employee
 from .config import Defaults
 from .schemas.app_settings import AppSettings
+from .schemas.app_index import AppIndex
 
 
 TASK_COMPLETED_KEY = "completed"
@@ -53,6 +55,7 @@ class NetTimeAPI:
 
         self._access_token: Optional[str] = None
         self._settings: Optional[AppSettings] = None
+        self._index: Optional[AppIndex] = None
 
     def __str__(self) -> str:
         return f'NetTime client for {self.url}'
@@ -77,6 +80,7 @@ class NetTimeAPI:
 
     def __ne__(self, o: NetTimeAPI) -> bool:
         return self.url != o.url or self._username != o._username
+
 
     def _config_session(self) -> None:
         """Apply default headers, aditional inner headers and session config
@@ -111,12 +115,18 @@ class NetTimeAPI:
     def __enter__(self, *args, **kwargs) -> NetTimeAPI:
         self.login()
         self._settings = self.settings
+        self._index = self.index
         return self
 
 
     @property
     def settings(self) -> AppSettings:
         return self.get_settings()
+
+
+    @property
+    def index(self) -> AppIndex:
+        return self.get_index()
     
 
     def __exit__(self, *args, **kwargs) -> None:
@@ -340,6 +350,13 @@ class NetTimeAPI:
         """Get settings of netTime"""
 
         return self.get(path='/api/settings')
+    
+    
+    @validate_call(validate_return=True)
+    def get_index(self) -> AppIndex:
+        """Get settings of netTime"""
+
+        return self.get(path='/api/index')
 
 
     @property
