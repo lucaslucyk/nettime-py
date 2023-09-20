@@ -13,7 +13,7 @@ OFFSET_PARAM_NAME = "pageStartIndex"
 LIMIT_PARAM_NAME = "pageSize"
 
 
-class Container(Generic[ModelType], ABC):
+class ContainerBase(Generic[ModelType], ABC):
     def __init__(
             self,
             client: "NetTimeAPI",

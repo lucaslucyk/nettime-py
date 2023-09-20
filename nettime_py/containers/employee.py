@@ -1,8 +1,8 @@
-from .container import Container
+from .base import ContainerBase
 from ..schemas.employees import Employee as EmployeeSchema
 
 
-class Employee(Container[EmployeeSchema]):
+class Employee(ContainerBase[EmployeeSchema]):
     path_attribute = ""
     order = "id"
     container_name = "Persona"

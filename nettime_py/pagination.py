@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Generator, Generic, Iterable, List
 from .schemas.base import ModelType
 
 if TYPE_CHECKING:
-    from .containers.container import Container
+    from .containers.base import ContainerBase
 
 
 class LimitOffsetPagination(Generic[ModelType]):
@@ -11,7 +11,7 @@ class LimitOffsetPagination(Generic[ModelType]):
     def __init__(
         self,
         items: Iterable,
-        container: "Container",
+        container: "ContainerBase",
         method_name: str,
         params: dict = {},
         offset: int = 0,

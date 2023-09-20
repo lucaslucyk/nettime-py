@@ -8,8 +8,8 @@ from pydantic import validate_call
 
 
 from .exceptions import AuthException, ConfigException, UrlException
-from .containers.employees import Employee
-from .containers.readers import Reader
+from .containers.employee import Employee
+from .containers.reader import Reader
 from .config import Defaults
 from .schemas.app_settings import AppSettings
 from .schemas.app_index import AppIndex
