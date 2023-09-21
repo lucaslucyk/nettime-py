@@ -1,0 +1,30 @@
+
+name: Upload Python Package
+
+on:
+    release:
+        types: [published]
+
+jobs:
+    pypi-publish:
+        name: Publish to PyPi
+        runs-on: ubuntu-latest
+        environment:
+            name: pypi
+            url: https://pypi.org/p/<your-pypi-project-name>
+        permissions:
+            id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+        steps:
+            - uses: actions/checkout@v2 # Checking out the repo
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with: 
+                python-version: '3.x'
+            - name: Install dependencies
+              uses: VaultVulp/action-pipenv@v2.0.1
+              with:
+                command: install -d # Install all dependencies, including development ones
+            - name: Build package version
+              run: sh ./build.sh
+            - name: Publish package distributions to PyPI
+              uses: pypa/gh-action-pypi-publish@release/v1
