@@ -4,6 +4,7 @@
 # extended
 .nogit
 *.nogit
+nettime_py/VERSION
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

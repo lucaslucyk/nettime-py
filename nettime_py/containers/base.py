@@ -30,7 +30,7 @@ class ContainerBase(Generic[ModelType], ABC):
     
     @property
     @abstractmethod
-    def schema_class(self) -> ModelType:
+    def list_schema(self) -> ModelType:
         ...
 
 
@@ -39,11 +39,23 @@ class ContainerBase(Generic[ModelType], ABC):
     def path_attribute(self) -> str:
         ...
 
+
     @property
     @abstractmethod
-    def base_params(self) -> dict:
+    def container_name(self) -> str:
         ...
 
+
+    @property
+    @abstractmethod
+    def order(self) -> str:
+        ...
+
+
+    @property
+    def base_params(self) -> dict:
+        return {"container": self.container_name}
+    
 
     @property
     def list_path(self) -> str:
@@ -123,7 +135,8 @@ class ContainerBase(Generic[ModelType], ABC):
             # args
             "query": str(query),
             "search": search,
-            "desc": str(desc)
+            "desc": str(desc),
+            "order": self.order
         })
 
         # create params from container base_params and update with inner
@@ -136,7 +149,7 @@ class ContainerBase(Generic[ModelType], ABC):
         # return paginator
         return Pagination(
             items=self.parse_object_as(
-                kind=List[self.schema_class],
+                kind=List[self.list_schema],
                 data=response.get('items', [])
             ),
             container=self,
@@ -199,3 +212,6 @@ class ContainerBase(Generic[ModelType], ABC):
             params=params,
             page=page
         )
+
+    
+    def save(self): ...

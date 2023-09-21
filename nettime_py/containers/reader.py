@@ -6,12 +6,4 @@ class Reader(ContainerBase[ReaderSchema]):
     path_attribute = ""
     order = "id"
     container_name = "Lector"
-    schema_class = ReaderSchema
-
-
-    @property
-    def base_params(self) -> dict:
-        return {
-            "container": self.container_name,
-            "order": self.order
-        }
+    list_schema = ReaderSchema
