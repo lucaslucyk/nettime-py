@@ -10,6 +10,7 @@ Python API client for netTime (SPEC, SA).
 
 This project is in an early stage of development and may contain bugs. It is not recommended for use in production environments.
 
+
 ## Why use `nettime-py`?
 - :zap: __Fast to code__: Increase the speed to develop integrations features.
 - :x: __Fewer bugs__: Reduce human (developer) induced errors.
@@ -18,13 +19,19 @@ This project is in an early stage of development and may contain bugs. It is not
 - :part_alternation_mark: __Short__: Minimize code duplication. Multiple features from each parameter declaration. Fewer bugs.
 
 
-## Install on editable mode with Pipenv
+## Install
 ```bash
-...$ git clone git@github.com:lucaslucyk/nettime-py.git
-...$ cd nettime-py/
-.../nettime-py$ mkdir .venv
-.../nettime-py$ pipenv install && pipenv install -d
-.../nettime-py$ source .venv/bin/activate
+$  pip install nettime-py
+```
+
+
+## Install to dev
+```bash
+$ git clone git@github.com:lucaslucyk/nettime-py.git
+$ cd nettime-py/
+/nettime-py$ mkdir .venv
+/nettime-py$ pipenv install && pipenv install -d
+/nettime-py$ source .venv/bin/activate
 (nettime-py) ./nettime-py/$ pip install -e .
 ```
 
