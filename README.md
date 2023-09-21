@@ -2,6 +2,7 @@
 Python API client for netTime (SPEC, SA).
 
 - Repository: [https://github.com/lucaslucyk/nettime-py](https://github.com/lucaslucyk/nettime-py)
+- PyPi: [https://pypi.org/project/nettime-py](https://pypi.org/project/nettime-py)
 - Documentation: Coming soon.
 
 
