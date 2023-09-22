@@ -13,11 +13,11 @@ This project is in an early stage of development and may contain bugs. It is not
 
 
 ## Why use `nettime-py`?
-- :zap: __Fast to code__: Increase the speed to develop integrations features.
-- :x: __Fewer bugs__: Reduce human (developer) induced errors.
-- :bulb: __Intuitive__: Great editor support. Completion everywhere. Less time debugging.
-- :nerd_face: __Easy__: Designed to be easy to use and learn. Less time reading docs.
-- :part_alternation_mark: __Short__: Minimize code duplication. Multiple features from each parameter declaration. Fewer bugs.
+- 🚀 __Fast to code__: Increase the speed to develop integrations features.
+- ❌ __Fewer bugs__: Reduce human (developer) induced errors.
+- 💡 __Intuitive__: Great editor support. Completion everywhere. Less time debugging.
+- 🤓 __Easy__: Designed to be easy to use and learn. Less time reading docs.
+- 〽️  __Short__: Minimize code duplication. Multiple features from each parameter declaration. Fewer bugs.
 
 
 ## Install

@@ -19,6 +19,7 @@ class Defaults(BaseSettings):
     SESSION_HEADERS: Dict[str, Any] = {
         "DNT": "1",
         "Accept-Encoding": "gzip,deflate",
+        "User-Agent": "netTime API Python"
         # "Content-Type": "application/json;charset=UTF-8"
     }
     
