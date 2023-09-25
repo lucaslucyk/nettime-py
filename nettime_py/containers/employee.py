@@ -1,11 +1,11 @@
 from .base import ContainerBase
-from ..schemas.elements.employees import Employee as ListSchema
-from ..schemas.views.employees import Employee as ViewSchema
+from ..schemas.list.employees import Employee as ListSchema
+from ..schemas.detail.employees import Employee as DetailSchema
 
 
-class Employee(ContainerBase[ListSchema, ViewSchema]):
+class Employee(ContainerBase[ListSchema, DetailSchema]):
     path_attribute = ""
     order = "id"
     container_name = "Persona"
     list_schema = ListSchema
-    view_schema = ViewSchema
+    detail_schema = DetailSchema

@@ -15,4 +15,4 @@ class Base(BaseModel):
         extra = "allow"
 
 ListModel = TypeVar("ListModel", bound=Base)
-ViewModel = TypeVar("ViewModel", bound=Base)
+DetailModel = TypeVar("DetailModel", bound=Base)

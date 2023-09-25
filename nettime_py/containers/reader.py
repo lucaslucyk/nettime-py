@@ -1,11 +1,12 @@
 from .base import ContainerBase
-from ..schemas.readers import Reader as ReaderSchema
+from ..schemas.list.readers import Reader as ListSchema
+from ..schemas.detail.readers import Reader as DetailSchema
 
 
 #TODO: create and replace view model
-class Reader(ContainerBase[ReaderSchema, ReaderSchema]):
+class Reader(ContainerBase[ListSchema, DetailSchema]):
     path_attribute = ""
     order = "id"
     container_name = "Lector"
-    list_schema = ReaderSchema
-    view_schema = ReaderSchema
+    list_schema = ListSchema
+    detail_schema = DetailSchema

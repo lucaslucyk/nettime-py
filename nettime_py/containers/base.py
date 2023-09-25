@@ -3,7 +3,7 @@ from pydantic import TypeAdapter, validate_call
 from typing import TYPE_CHECKING, Any, Generator, Generic, List, Optional
 from .query import Query
 from ..pagination import LimitOffsetPagination as Pagination
-from ..schemas.base import ListModel, ViewModel
+from ..schemas.base import ListModel, DetailModel
 from ..config import ACTION_VIEW
 from ..exceptions import NotFoundException
 
@@ -16,7 +16,7 @@ OFFSET_PARAM_NAME = "pageStartIndex"
 LIMIT_PARAM_NAME = "pageSize"
 
 
-class ContainerBase(Generic[ListModel, ViewModel], ABC):
+class ContainerBase(Generic[ListModel, DetailModel], ABC):
     def __init__(
             self,
             client: "NetTimeAPI",
@@ -39,7 +39,7 @@ class ContainerBase(Generic[ListModel, ViewModel], ABC):
     
     @property
     @abstractmethod
-    def view_schema(self) -> type[ViewModel]:
+    def detail_schema(self) -> type[DetailModel]:
         ...
 
 
@@ -224,7 +224,7 @@ class ContainerBase(Generic[ListModel, ViewModel], ABC):
 
     
     @validate_call
-    def get(self, id: int, **kwargs) -> ViewModel:
+    def get(self, id: int, **kwargs) -> DetailModel:
         _json = self.base_params
         _json.update({
             "action": ACTION_VIEW,
@@ -235,6 +235,6 @@ class ContainerBase(Generic[ListModel, ViewModel], ABC):
         res = self._client.post(url=self.action_url, json=_json, **kwargs)
         if not len(res): raise NotFoundException("Element not found")
         return self.parse_object_as(
-            kind=self.view_schema,
+            kind=self.detail_schema,
             data=res[0].get('dataObj')
         )
