@@ -14,4 +14,5 @@ class Base(BaseModel):
     class Config:
         extra = "allow"
 
-ModelType = TypeVar("ModelType", bound=Base)
+ListModel = TypeVar("ListModel", bound=Base)
+ViewModel = TypeVar("ViewModel", bound=Base)

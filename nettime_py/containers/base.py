@@ -3,7 +3,10 @@ from pydantic import TypeAdapter, validate_call
 from typing import TYPE_CHECKING, Any, Generator, Generic, List, Optional
 from .query import Query
 from ..pagination import LimitOffsetPagination as Pagination
-from ..schemas.base import ModelType
+from ..schemas.base import ListModel, ViewModel
+from ..config import ACTION_VIEW
+from ..exceptions import NotFoundException
+
 
 if TYPE_CHECKING:
     from ..api import NetTimeAPI
@@ -13,7 +16,7 @@ OFFSET_PARAM_NAME = "pageStartIndex"
 LIMIT_PARAM_NAME = "pageSize"
 
 
-class ContainerBase(Generic[ModelType], ABC):
+class ContainerBase(Generic[ListModel, ViewModel], ABC):
     def __init__(
             self,
             client: "NetTimeAPI",
@@ -30,7 +33,13 @@ class ContainerBase(Generic[ModelType], ABC):
     
     @property
     @abstractmethod
-    def list_schema(self) -> ModelType:
+    def list_schema(self) -> type[ListModel]:
+        ...
+
+    
+    @property
+    @abstractmethod
+    def view_schema(self) -> type[ViewModel]:
         ...
 
 
@@ -110,7 +119,7 @@ class ContainerBase(Generic[ModelType], ABC):
         desc: bool = False,
         params: dict = {},
         **kwargs
-    ) -> Pagination[ModelType]:
+    ) -> Pagination[ListModel]:
         """List elements of a container
 
         Args:
@@ -124,7 +133,7 @@ class ContainerBase(Generic[ModelType], ABC):
                 Custom params to send to `client.get` method. Defaults to {}.
 
         Returns:
-            Pagination[ModelType]: Pagination of instanced ModelType.
+            Pagination[ListModel]: Pagination of instanced ListModel.
         """
 
         # update custom inner params with params and page keys
@@ -167,7 +176,7 @@ class ContainerBase(Generic[ModelType], ABC):
         desc: bool = False,
         params: dict = {},
         page: Optional[Pagination] = None
-    ) -> Generator[ModelType, Any, None]:
+    ) -> Generator[ListModel, Any, None]:
         """Get all elements of a container using `list` method.
 
         Args:
@@ -182,7 +191,7 @@ class ContainerBase(Generic[ModelType], ABC):
                 Optional Pagination object to start. Defaults to None.
 
         Yields:
-            Generator[ModelType, Any, None]: Iterator of ModelType instances.
+            Generator[ListModel, Any, None]: Iterator of ListModel instances.
         """
 
         if not page:
@@ -214,4 +223,18 @@ class ContainerBase(Generic[ModelType], ABC):
         )
 
     
-    def save(self): ...
+    @validate_call
+    def get(self, id: int, **kwargs) -> ViewModel:
+        _json = self.base_params
+        _json.update({
+            "action": ACTION_VIEW,
+            "all": False,
+            "elements": [id]
+        })
+
+        res = self._client.post(url=self.action_url, json=_json, **kwargs)
+        if not len(res): raise NotFoundException("Element not found")
+        return self.parse_object_as(
+            kind=self.view_schema,
+            data=res[0].get('dataObj')
+        )

@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Generator, Generic, Iterable, List
-from .schemas.base import ModelType
+from .schemas.base import ListModel
 
 if TYPE_CHECKING:
     from .containers.base import ContainerBase
 
 
-class LimitOffsetPagination(Generic[ModelType]):
+class LimitOffsetPagination(Generic[ListModel]):
     
     def __init__(
         self,
@@ -23,7 +23,7 @@ class LimitOffsetPagination(Generic[ModelType]):
         self._method_name = method_name
 
 
-    def __iter__(self) -> Generator[ModelType, Any, None]:
+    def __iter__(self) -> Generator[ListModel, Any, None]:
         yield from self._items
 
 
@@ -31,7 +31,7 @@ class LimitOffsetPagination(Generic[ModelType]):
         return len(self._items)
 
 
-    def __getitem__(self, index: int) -> ModelType:
+    def __getitem__(self, index: int) -> ListModel:
         return self._items[index]
 
 
@@ -40,7 +40,7 @@ class LimitOffsetPagination(Generic[ModelType]):
 
 
     @property
-    def all(self) -> List[ModelType]:
+    def all(self) -> List[ListModel]:
         return self._items
     
 

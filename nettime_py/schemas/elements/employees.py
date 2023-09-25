@@ -37,124 +37,144 @@ class Employee(Base):
     last_name: Optional[str] = Field(default=None, alias="LastName")
     name_employee: Optional[str] = Field(default=None, alias="nameEmployee")
     no_attendance: Optional[bool] = Field(default=None, alias="NoAttendance")
-    fingers_quantity: Optional[int] = Field(default=None, alias="NumFingers")
-
-    # TODO: split by ; char
-    timetypes: Optional[str] = Field(default=None, alias="TimeTypesEmployee")
-
+    num_fingers: Optional[int] = Field(default=None, alias="NumFingers")
+    time_types_employee: Optional[str] = Field(
+        default=None,
+        alias="TimeTypesEmployee"
+    )
     readers: Optional[List[int]] = Field(default=None, alias="Readers")
     town: Optional[str] = Field(default=None, alias="Town")
     province: Optional[str] = Field(default=None, alias="Province")
     postal_code: Optional[str] = Field(default=None, alias="PostalCode")
-
     birth_date: Optional[datetime] = Field(default=None, alias="birthdate")
     register_system_date: Optional[datetime] = Field(
         default=None, alias="RegisterSystemDate"
     )
-
-    # TODO: Check to edit with periods
     active_days: Optional[str] = Field(
         default=None,
         alias="ActiveDays",
         description="Antiquity"
     )
-    activedays: Optional[str] = Field(default=None, alias="Persona.DiasActivos")
-
-    employee_departments: Optional[List[EmployeeDepartment]] = Field(
+    persona_dias_activos: Optional[str] = Field(
+        default=None,
+        alias="Persona.DiasActivos"
+    )
+    departments: Optional[List[EmployeeDepartment]] = Field(
         default=None,
         alias="Departments"
     )
-
     calendar: Optional[int] = Field(default=None, alias="Calendar")
-    portal_not_validation_required: Optional[bool] = Field(
+    portal_no_requiere_validacion_en_correccion: Optional[bool] = Field(
         default=None,
         alias="Portal.NoRequiereValidacionEnCorreccion"
     )
-    portal_can_not_edit: Optional[bool] = Field(
+    portal_no_puede_editar: Optional[bool] = Field(
         default=None,
         alias="Portal.NoPuedeEditar"
     )
-    portal_can_use: Optional[bool] = Field(
+    portal_usa_portal: Optional[bool] = Field(
         default=None,
         alias="Portal.UsaPortal"
     )
-    portal_results_template: Optional[int] = Field(
+    portal_plantilla_resultados: Optional[int] = Field(
         default=None,
         alias="Portal.PlantillaResultados"
     )
-    portal_disable_movs: Optional[bool] = Field(
+    portal_disable_movimientos: Optional[bool] = Field(
         default=None,
         alias="Portal.DisableMovimientos"
     )
-    portal_disable_resume_view: Optional[bool] = Field(
+    portal_disable_vista_resumen: Optional[bool] = Field(
         default=None,
         alias="Portal.DisableVistaResumen"
     )
 
-    present: Optional[Present] = Field(default=None, alias="Persona.Presente")
+    persona_presente: Optional[Present] = Field(
+        default=None,
+        alias="Persona.Presente"
+    )
     is_present: Optional[bool] = Field(default=None, alias="IsPresent")
-    departments: Optional[str] = Field(
+    persona_departaments: Optional[str] = Field(
         default=None,
         alias="Persona.Departaments"
     )
     photo: Optional[str] = Field(default=None, alias="Photo")
-    clockings: Optional[str] = Field(default=None, alias="Persona.Clockings")
-    dni_name_lastname: Optional[str] = Field(
+    persona_clockings: Optional[str] = Field(
+        default=None,
+        alias="Persona.Clockings"
+    )
+    dni_apellidos_nombre: Optional[str] = Field(
         default=None,
         alias="DNI_Apellidos_Nombre"
     )
-    name_lastname: Optional[str] = Field(default=None, alias="Apellidos_Nombre")
-    anomaly: Optional[str] = Field(default=None, alias="Persona.Anomalia")
-    shift: Optional[str] = Field(default=None, alias="Persona.Jornada")
-    effective_calendar: Optional[str] = Field(
+    apellidos_nombre: Optional[str] = Field(
+        default=None,
+        alias="Apellidos_Nombre"
+    )
+    persona_anomalia: Optional[str] = Field(
+        default=None,
+        alias="Persona.Anomalia"
+    )
+    persona_jornada: Optional[str] = Field(
+        default=None,
+        alias="Persona.Jornada"
+    )
+    persona_calendario: Optional[str] = Field(
         default=None,
         alias="Persona.Calendario"
     )
-    base_calendar: Optional[str] = Field(
+    persona_calendario_base: Optional[str] = Field(
         default=None,
         alias="Persona.CalendarioBase"
     )
-    is_active: Optional[bool] = Field(default=None, alias="Persona.DeAlta")
+    persona_de_alta: Optional[bool] = Field(
+        default=None,
+        alias="Persona.DeAlta"
+    )
     id_enroll: Optional[int] = Field(default=None, alias="idEnroll")
     enroll_active: Optional[int] = Field(default=None, alias="enrollActive")
-    access_current_zone: Optional[int] = Field(
+    accesos_zona: Optional[int] = Field(
         default=None,
         alias="Accesos.Zona"
     )
-    access_profiles: Optional[str] = Field(
+    accesos_perfiles: Optional[str] = Field(
         default=None,
         alias="Accesos.Perfiles"
     )
     phone: Optional[str] = Field(default=None, alias="Phone")
-    cards: Optional[str] = Field(default=None, alias="Persona.Cards")
+    persona_cards: Optional[str] = Field(default=None, alias="Persona.Cards")
 
     employee_code: Optional[str] = Field(default=None, alias="employeeCode")
     company_code: Optional[str] = Field(default=None, alias="companyCode")
-    professional_mobile: Optional[str] = Field(default=None, alias="Mobile")
+    mobile: Optional[str] = Field(default=None, alias="Mobile")
     personal_phone: Optional[str] = Field(default=None, alias="PersonalPhone")
     personal_mobile: Optional[str] = Field(default=None, alias="PersonalMobile")
 
-    weekly_theoretical_hours: Optional[int] = Field(
+    persona_horas_teoricas_semanales: Optional[int] = Field(
         default=None,
         alias="Persona.HorasTeoricasSemanales"
     )
-    tree_node: Optional[str] = Field(default=None, alias="nodoArbol")
+    nodo_arbol: Optional[str] = Field(default=None, alias="nodoArbol")
     nif: Optional[str] = Field(default=None, alias="nif")
-    last_clocking: Optional[str] = Field(default=None, alias="LastMarcaje")
-    last_clocking_reader: Optional[str] = Field(
+    last_marcaje: Optional[str] = Field(default=None, alias="LastMarcaje")
+    last_marcaje_reader: Optional[str] = Field(
         default=None,
         alias="LastMarcajeReader"
     )
-    exboss: Optional[bool] = Field(default=None, description="Assigned to me")
-    managers: Optional[str] = Field(
+    exboss: Optional[bool] = Field(
+        default=None,
+        alias="exboss",
+        description="Assigned to me"
+    )
+    persona_managers_action: Optional[str] = Field(
         default=None,
         alias="Persona.ManagersAction"
     )
-    time_readers: Optional[str] = Field(
+    persona_valid_readers: Optional[str] = Field(
         default=None,
         alias="Persona.ValidReaders"
     )
-    today_planning: Optional[str] = Field(
+    persona_planis_today: Optional[str] = Field(
         default=None,
         alias="Persona.PlanisToday"
     )
@@ -167,26 +187,27 @@ class Employee(Base):
         default=None,
         alias="CurrentStatusWO"
     )
-    first_day_clocking: Optional[str] = Field(
+    persona_first_clocking: Optional[str] = Field(
         default=None,
         alias="Persona.FirstClocking"
     )
-    last_day_clocking: Optional[str] = Field(
+    persona_last_clocking: Optional[str] = Field(
         default=None,
         alias="Persona.LastClocking"
     )
-
-    bio_data_enrolled: Optional[str] = Field(
+    persona_bio_data_enrolled: Optional[str] = Field(
         default=None,
         alias="Persona.BioDataEnrolled"
     )
-    total_docs: Optional[int] = Field(default=None, alias="Persona.totalDocs")
-
-    use_remote_clocking: Optional[bool] = Field(
+    persona_total_docs: Optional[int] = Field(
+        default=None,
+        alias="Persona.totalDocs"
+    )
+    remote_clocking: Optional[bool] = Field(
         default=None,
         alias="RemoteClocking"
     )
-    use_mobile_clocking: Optional[bool] = Field(
+    mobile_clocking: Optional[bool] = Field(
         default=None,
         alias="MobileClocking"
     )

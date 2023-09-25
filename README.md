@@ -1,4 +1,4 @@
-# netTime API Client - \*Development Phase
+# netTime API Client
 Python API client for netTime (SPEC, SA).
 
 - Repository: [https://github.com/lucaslucyk/nettime-py](https://github.com/lucaslucyk/nettime-py)
@@ -7,7 +7,7 @@ Python API client for netTime (SPEC, SA).
 
 
 ## Project Status
-:warning: **Warning**: This project is currently in development phase.
+⚠️ **_Warning_**: This project is currently in __*development phase*__.
 
 This project is in an early stage of development and may contain bugs. It is not recommended for use in production environments.
 
