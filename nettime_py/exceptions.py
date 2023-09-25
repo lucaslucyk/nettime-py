@@ -5,6 +5,7 @@ class ConfigException(Exception):
 class UrlException(Exception):
     pass
 
+
 class AuthException(Exception):
     pass
 

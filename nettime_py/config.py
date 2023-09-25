@@ -22,6 +22,6 @@ class Defaults(BaseSettings):
         "User-Agent": "netTime API Python"
         # "Content-Type": "application/json;charset=UTF-8"
     }
-    
+
     class Extra:
         ...

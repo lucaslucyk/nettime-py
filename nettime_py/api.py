@@ -22,7 +22,6 @@ __all__ = ["NetTimeAPI"]
 
 
 class NetTimeAPI:
-
     def __init__(
         self,
         url: Union[str, bytes],
@@ -30,9 +29,9 @@ class NetTimeAPI:
         password: str,
         # session: Session = Session(),
         session_config: Optional[Dict[str, Any]] = None,
-        aditional_headers: Optional[Dict[str, Any]] = None
+        aditional_headers: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """ Create a connector with nettime app using recived parameters
+        """Create a connector with nettime app using recived parameters
 
         Args:
             url Union[str, bytes]: Nettime url. Eg `https://server-name:8091/`
@@ -60,46 +59,42 @@ class NetTimeAPI:
         self._index: Optional[AppIndex] = None
 
     def __str__(self) -> str:
-        return f'NetTime client for {self.url}'
-    
+        return f"NetTime client for {self.url}"
 
     def __repr__(self) -> str:
         return "{class_}({params})".format(
             class_=type(self).__name__,
-            params=', '.join([
-                f'url="{self.url}"',
-                f'username="{self._username}"',
-                f'password="{self._password}"',
-                f'session_config="{self.session_config}"',
-                f'aditional_headers="{self._aditional_headers}"',
-            ])
+            params=", ".join(
+                [
+                    f'url="{self.url}"',
+                    f'username="{self._username}"',
+                    f'password="{self._password}"',
+                    f'session_config="{self.session_config}"',
+                    f'aditional_headers="{self._aditional_headers}"',
+                ]
+            ),
         )
-    
 
     def __eq__(self, o: NetTimeAPI) -> bool:
         return self.url == o.url and self._username == o._username
-    
 
     def __ne__(self, o: NetTimeAPI) -> bool:
         return self.url != o.url or self._username != o._username
 
-
     def _config_session(self) -> None:
-        """Apply default headers, aditional inner headers and session config
-        """
+        """Apply default headers, aditional inner headers and session config"""
 
         # apply default headers
         self.session.headers.update(self._defaults.SESSION_HEADERS)
-        
+
         # apply aditional headers
         if self._aditional_headers:
             self.session.headers.update(self._aditional_headers)
-        
+
         # apply custom configs
         if self._session_config:
-            for k,v in self._session_config.items():
+            for k, v in self._session_config.items():
                 setattr(self.session, k, v)
-
 
     def _check_config(self) -> None:
         """Check inner params at instance creation.
@@ -109,10 +104,9 @@ class NetTimeAPI:
         """
         if not self.url:
             raise ConfigException("Missing url in API creation")
-        
+
         if not self._username or not self._password:
             raise ConfigException("Missing username or password")
-        
 
     def __enter__(self, *args, **kwargs) -> NetTimeAPI:
         self.login()
@@ -120,16 +114,13 @@ class NetTimeAPI:
         self._index = self.index
         return self
 
-
     @property
     def settings(self) -> AppSettings:
         return self.get_settings()
 
-
     @property
     def index(self) -> AppIndex:
         return self.get_index()
-    
 
     def __exit__(self, *args, **kwargs) -> None:
         if self.is_authenticated:
@@ -137,14 +128,11 @@ class NetTimeAPI:
 
         self.session.__exit__(*args)
 
-
     def _clear_user_session(self) -> None:
-        """Deletes data associated with the user session
-        """
+        """Deletes data associated with the user session"""
         self._access_token = None
         self.session.headers.pop("Cookie", None)
 
-    
     def _set_user_session(self, access_token: str) -> None:
         """Set data associated with the user session
 
@@ -153,19 +141,19 @@ class NetTimeAPI:
         """
 
         self._access_token = access_token
-        self.session.headers.update({
-            "Cookie": f"sessionID={access_token}; i18next=es"
-        })
-
+        self.session.headers.update(
+            {"Cookie": f"sessionID={access_token}; i18next=es"}
+        )
 
     @property
     def is_authenticated(self) -> bool:
-        """ Informs if client has headers and access_token. """
-        return all((
-            "Cookie" in self.session.headers.keys(),
-            self._access_token != None
-        ))
-
+        """Informs if client has headers and access_token."""
+        return all(
+            (
+                "Cookie" in self.session.headers.keys(),
+                self._access_token != None,
+            )
+        )
 
     def _raise_or_return_json(self, response: Response) -> Any:
         """Raise HTTPError before converting response to json
@@ -189,13 +177,12 @@ class NetTimeAPI:
         else:
             return json_value
 
-
     def get(
         self,
         url: Optional[Union[str, bytes]] = None,
         path: Optional[Union[str, bytes]] = None,
         params: Optional[Dict[str, Any]] = None,
-        **kwargs
+        **kwargs,
     ) -> Any:
         """Sends a POST request to url or self.url + path.
 
@@ -216,13 +203,12 @@ class NetTimeAPI:
 
         if not url and not path:
             raise UrlException("Must specify a complete url or path")
-        
+
         # build url
         _url = url or self.url + path
         response = self.session.get(url=_url, params=params, **kwargs)
         result = self._raise_or_return_json(response=response)
         return self._discover_task(result=result)
-
 
     def post(
         self,
@@ -230,7 +216,7 @@ class NetTimeAPI:
         path: Optional[Union[str, bytes]] = None,
         data: Any = None,
         json: Optional[Dict[str, Any]] = None,
-        **kwargs
+        **kwargs,
     ) -> Any:
         """Sends a POST request to url or self.url + path.
 
@@ -253,16 +239,15 @@ class NetTimeAPI:
 
         if not url and not path:
             raise UrlException("Must specify a complete url or path")
-        
+
         # build url
         _url = url or self.url + path
         response = self.session.post(url=_url, data=data, json=json, **kwargs)
         result = self._raise_or_return_json(response=response)
         return self._discover_task(result=result)
-    
 
     def _discover_task(self, result: Any) -> Any:
-        """Checks if the result is of type task and waits for it to finish 
+        """Checks if the result is of type task and waits for it to finish
         before returning its result.
 
         Args:
@@ -271,68 +256,62 @@ class NetTimeAPI:
         Returns:
             Any: JSON response or JSON Task result.
         """
-        if isinstance(result, dict) and result.get('taskId', None):
-            result = self.get_task_response(task_id=result.get('taskId'))
+        if isinstance(result, dict) and result.get("taskId", None):
+            result = self.get_task_response(task_id=result.get("taskId"))
 
         # return json response
         return result
 
-
     def login(self) -> None:
-        """ Connect the client to set access_token and headers values. """
+        """Connect the client to set access_token and headers values."""
 
         if self.is_authenticated:
             return
 
         # remove content type from headers. Must be not json
         self._clear_user_session()
-        
+
         # data prepare
         data = {"username": self._username, "pwd": self._password}
         # consulting nettime
-        response = self.post(path='/api/login', json=data)
+        response = self.post(path="/api/login", json=data)
 
         if not response.get("ok", None):
-            raise AuthException({
-                "status": 401,
-                "detail": response.get("message")
-            })
-        
+            raise AuthException(
+                {"status": 401, "detail": response.get("message")}
+            )
+
         self._set_user_session(access_token=response.get("access_token"))
 
-
     def logout(self) -> None:
-        """ Disconnect a client to clean the access_token. """
+        """Disconnect a client to clean the access_token."""
 
         if not self.is_authenticated:
             return
 
         # do logout
-        self.post(path='/api/logout')
+        self.post(path="/api/logout")
 
         # clean token and headers for safety
         self._clear_user_session()
 
-
     def relogin(self) -> None:
-        """ Reconnect client cleaning headers and access_token. """
+        """Reconnect client cleaning headers and access_token."""
 
         self.logout()
         self.login()
 
-
     def get_task_status(self, task_id: int, **kwargs):
-        """ Get status of an async task. """
+        """Get status of an async task."""
 
         # prepare task parameters
         params = {"taskid": task_id}
 
         # request.get -> json
-        return self.get(path='/api/async/status', params=params, **kwargs)
-
+        return self.get(path="/api/async/status", params=params, **kwargs)
 
     def get_task_response(self, task_id: int):
-        """ Return the result of a async task. """
+        """Return the result of a async task."""
 
         # ensure the task is complete
         task_status = self.get_task_status(task_id=task_id)
@@ -344,27 +323,23 @@ class NetTimeAPI:
         params = {"taskid": task_id}
 
         # request.get -> json
-        return self.get(path='/api/async/response', params=params)
-    
-    
+        return self.get(path="/api/async/response", params=params)
+
     @validate_call(validate_return=True)
     def get_settings(self) -> AppSettings:
         """Get settings of netTime"""
 
-        return self.get(path='/api/settings')
-    
-    
+        return self.get(path="/api/settings")
+
     @validate_call(validate_return=True)
     def get_index(self) -> AppIndex:
         """Get settings of netTime"""
 
-        return self.get(path='/api/index')
-
+        return self.get(path="/api/index")
 
     @property
     def employees(self) -> Employee:
         return Employee(client=self)
-
 
     @property
     def readers(self) -> Reader:

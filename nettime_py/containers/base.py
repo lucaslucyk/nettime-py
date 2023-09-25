@@ -18,83 +18,70 @@ LIMIT_PARAM_NAME = "pageSize"
 
 class ContainerBase(Generic[ListModel, DetailModel], ABC):
     def __init__(
-            self,
-            client: "NetTimeAPI",
-            page_size: int = 10,
-            # order: str = None
-        ) -> None:
+        self,
+        client: "NetTimeAPI",
+        page_size: int = 10,
+        # order: str = None
+    ) -> None:
         super().__init__()
         self._client = client
         self._page_size = page_size
-        self._base_path = '/api/container/'
-        self._list_prefix = 'elements/'
-        self._action_prexix = 'action/exec/'
+        self._base_path = "/api/container/"
+        self._list_prefix = "elements/"
+        self._action_prexix = "action/exec/"
 
-    
     @property
     @abstractmethod
     def list_schema(self) -> type[ListModel]:
         ...
 
-    
     @property
     @abstractmethod
     def detail_schema(self) -> type[DetailModel]:
         ...
-
 
     @property
     @abstractmethod
     def path_attribute(self) -> str:
         ...
 
-
     @property
     @abstractmethod
     def container_name(self) -> str:
         ...
-
 
     @property
     @abstractmethod
     def order(self) -> str:
         ...
 
-
     @property
     def base_params(self) -> dict:
         return {"container": self.container_name}
-    
 
     @property
     def list_path(self) -> str:
         return self._base_path + self._list_prefix + self.path_attribute
 
-
     @property
     def action_path(self) -> str:
         return self._base_path + self._action_prexix + self.path_attribute
-
 
     @property
     def list_url(self) -> str:
         return self._client.url + self.list_path
 
-
     @property
     def action_url(self) -> str:
         return self._client.url + self.action_path
-    
 
     @property
     def page_size(self) -> int:
         return self._page_size
 
-
     @page_size.setter
     def page_size(self, value: int) -> None:
         self._page_size = value
-    
 
     def parse_object_as(self, kind: Any, data: Any) -> Any:
         """Parse python object to pydantic model type
@@ -106,10 +93,9 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         Returns:
             Any: Pydantic model type instance
         """
-        
+
         return TypeAdapter(kind).validate_python(data)
-        
-    
+
     @validate_call(config={"arbitrary_types_allowed": True})
     def list(
         self,
@@ -137,16 +123,18 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         """
 
         # update custom inner params with params and page keys
-        params.update({
-            # pagination
-            OFFSET_PARAM_NAME: offset,
-            LIMIT_PARAM_NAME: self.page_size,
-            # args
-            "query": str(query),
-            "search": search,
-            "desc": str(desc),
-            "order": self.order
-        })
+        params.update(
+            {
+                # pagination
+                OFFSET_PARAM_NAME: offset,
+                LIMIT_PARAM_NAME: self.page_size,
+                # args
+                "query": str(query),
+                "search": search,
+                "desc": str(desc),
+                "order": self.order,
+            }
+        )
 
         # create params from container base_params and update with inner
         _params = self.base_params
@@ -158,15 +146,13 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         # return paginator
         return Pagination(
             items=self.parse_object_as(
-                kind=List[self.list_schema],
-                data=response.get('items', [])
+                kind=List[self.list_schema], data=response.get("items", [])
             ),
             container=self,
             method_name="list",
             params={"params": _params},
             offset=offset,
         )
-    
 
     @validate_call(config={"arbitrary_types_allowed": True})
     def all(
@@ -175,7 +161,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         search: str = "",
         desc: bool = False,
         params: dict = {},
-        page: Optional[Pagination] = None
+        page: Optional[Pagination] = None,
     ) -> Generator[ListModel, Any, None]:
         """Get all elements of a container using `list` method.
 
@@ -197,44 +183,35 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         if not page:
             # create paginator
             page = self.list(
-                query=query,
-                search=search,
-                desc=desc,
-                params=params
+                query=query, search=search, desc=desc, params=params
             )
             # yield elements
-            for item in page: yield item
+            for item in page:
+                yield item
 
         # get next page
         page = page.next_page()
 
         # return -exit- if page is empty
-        if not page: return
+        if not page:
+            return
         # yield elements if not
-        for item in page: yield item
-        
+        for item in page:
+            yield item
+
         # try to yield next page
         yield from self.all(
-            query=query,
-            search=search,
-            desc=desc,
-            params=params,
-            page=page
+            query=query, search=search, desc=desc, params=params, page=page
         )
 
-    
     @validate_call
     def get(self, id: int, **kwargs) -> DetailModel:
         _json = self.base_params
-        _json.update({
-            "action": ACTION_VIEW,
-            "all": False,
-            "elements": [id]
-        })
+        _json.update({"action": ACTION_VIEW, "all": False, "elements": [id]})
 
         res = self._client.post(url=self.action_url, json=_json, **kwargs)
-        if not len(res): raise NotFoundException("Element not found")
+        if not len(res):
+            raise NotFoundException("Element not found")
         return self.parse_object_as(
-            kind=self.detail_schema,
-            data=res[0].get('dataObj')
+            kind=self.detail_schema, data=res[0].get("dataObj")
         )

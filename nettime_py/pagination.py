@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 
 
 class LimitOffsetPagination(Generic[ListModel]):
-    
     def __init__(
         self,
         items: Iterable,
@@ -22,39 +21,31 @@ class LimitOffsetPagination(Generic[ListModel]):
         self._params = params
         self._method_name = method_name
 
-
     def __iter__(self) -> Generator[ListModel, Any, None]:
         yield from self._items
-
 
     def __len__(self) -> int:
         return len(self._items)
 
-
     def __getitem__(self, index: int) -> ListModel:
         return self._items[index]
-
 
     def __setitem__(self, index: int, value) -> None:
         self._items[index] = value
 
-
     @property
     def all(self) -> List[ListModel]:
         return self._items
-    
 
     @property
     def page_size(self) -> int:
         return self._container.page_size
-
 
     def next_page(self) -> LimitOffsetPagination:
         self._offset += self.page_size
         return getattr(self._container, self._method_name)(
             offset=self._offset, **self._params
         )
-
 
     def prev_page(self) -> LimitOffsetPagination:
         self._offset += self.page_size

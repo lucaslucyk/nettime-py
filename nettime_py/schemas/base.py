@@ -14,5 +14,6 @@ class Base(BaseModel):
     class Config:
         extra = "allow"
 
+
 ListModel = TypeVar("ListModel", bound=Base)
 DetailModel = TypeVar("DetailModel", bound=Base)
