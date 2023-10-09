@@ -12,3 +12,7 @@ class AuthException(Exception):
 
 class NotFoundException(Exception):
     ...
+
+
+class SaveException(Exception):
+    ...

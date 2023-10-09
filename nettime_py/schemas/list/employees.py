@@ -5,20 +5,20 @@ from ..base import Base
 
 
 class BlockMinute(BaseModel):
-    start: Optional[int] = Field(default=None)
-    end: Optional[int] = Field(default=None)
+    start: Optional[int] = Field(default=None, alias="start")
+    end: Optional[int] = Field(default=None, alias="end")
 
 
 class Block(BaseModel):
     id: int
-    color: Optional[str] = Field(default=None)
+    color: Optional[str] = Field(default=None, alias="color")
     type: int
-    minutes: Optional[List[BlockMinute]] = Field(default=None, alias="Minutos")
+    minutos: Optional[List[BlockMinute]] = Field(default=None, alias="Minutos")
 
 
 class Present(BaseModel):
     today: Optional[bool] = Field(default=None, alias="Today")
-    blocks: Optional[List[Block]] = Field(default=None, alias="Bloques")
+    bloques: Optional[List[Block]] = Field(default=None, alias="Bloques")
 
 
 class DepartmentValidity(BaseModel):
@@ -27,8 +27,8 @@ class DepartmentValidity(BaseModel):
 
 
 class EmployeeDepartment(BaseModel):
-    element: int = Field(default=None, alias="Elemento")
-    validity: Optional[List[DepartmentValidity]] = Field(
+    elemento: int = Field(default=None, alias="Elemento")
+    validez: Optional[List[DepartmentValidity]] = Field(
         default=None, alias="Validez"
     )
 

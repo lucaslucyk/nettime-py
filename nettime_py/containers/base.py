@@ -4,16 +4,19 @@ from typing import TYPE_CHECKING, Any, Generator, Generic, List, Optional
 from .query import Query
 from ..pagination import LimitOffsetPagination as Pagination
 from ..schemas.base import ListModel, DetailModel
-from ..config import ACTION_VIEW
-from ..exceptions import NotFoundException
+from ..config import (
+    ACTION_VIEW,
+    ACTION_SAVE,
+    ACTION_SAVE_OK,
+    ACTION_SAVE_ERROR,
+    OFFSET_PARAM_NAME,
+    LIMIT_PARAM_NAME
+)
+from ..exceptions import NotFoundException, SaveException
 
 
 if TYPE_CHECKING:
     from ..api import NetTimeAPI
-
-
-OFFSET_PARAM_NAME = "pageStartIndex"
-LIMIT_PARAM_NAME = "pageSize"
 
 
 class ContainerBase(Generic[ListModel, DetailModel], ABC):
@@ -83,7 +86,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
     def page_size(self, value: int) -> None:
         self._page_size = value
 
-    def parse_object_as(self, kind: Any, data: Any) -> Any:
+    def _parse_object_as(self, kind: Any, data: Any) -> Any:
         """Parse python object to pydantic model type
 
         Args:
@@ -145,7 +148,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
 
         # return paginator
         return Pagination(
-            items=self.parse_object_as(
+            items=self._parse_object_as(
                 kind=List[self.list_schema], data=response.get("items", [])
             ),
             container=self,
@@ -204,14 +207,65 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
             query=query, search=search, desc=desc, params=params, page=page
         )
 
-    @validate_call
+    @validate_call(config={"arbitrary_types_allowed": True})
     def get(self, id: int, **kwargs) -> DetailModel:
+        """Gets an element from the given id
+
+        Args:
+            id (int): Element id
+
+        Raises:
+            NotFoundException: If an element with the given id does not exist
+
+        Returns:
+            DetailModel: Found item
+        """
+
         _json = self.base_params
         _json.update({"action": ACTION_VIEW, "all": False, "elements": [id]})
 
         res = self._client.post(url=self.action_url, json=_json, **kwargs)
         if not len(res):
             raise NotFoundException("Element not found")
-        return self.parse_object_as(
+        return self._parse_object_as(
             kind=self.detail_schema, data=res[0].get("dataObj")
+        )
+
+    @validate_call
+    def save(self, data: DetailModel, **kwargs) -> DetailModel:
+        """Save an element to netTime
+
+        Args:
+            data (DetailModel): Element to save
+
+        Raises:
+            SaveException: If something was wrong
+
+        Returns:
+            DetailModel: Updated object
+        """
+        
+        _json = self.base_params
+        _json.update(
+            {
+                "action": ACTION_SAVE,
+                "all": False,
+                "elements": [data.id],
+                "dataObj": data.model_dump(
+                    exclude_unset=True, by_alias=True, mode="json"
+                ),
+            }
+        )
+        res = self._client.post(url=self.action_url, json=_json, **kwargs)
+        if not len(res):
+            raise SaveException("Something was wrong")
+
+        # get first and return
+        res = res[0]
+        # if res.get("type") == ACTION_SAVE_ERROR:
+        if res.get("type") != ACTION_SAVE_OK:
+            raise SaveException(res.get("message"))
+
+        return self._parse_object_as(
+            kind=self.detail_schema, data=res.get("dataObject")
         )
