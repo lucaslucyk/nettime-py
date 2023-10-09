@@ -1,18 +1,34 @@
 from abc import ABC, abstractmethod
 from pydantic import TypeAdapter, validate_call
-from typing import TYPE_CHECKING, Any, Generator, Generic, List, Optional
+from typing import TYPE_CHECKING, Any, Generator, Generic, List, Optional, Union
 from .query import Query
 from ..pagination import LimitOffsetPagination as Pagination
 from ..schemas.base import ListModel, DetailModel
+from ..schemas.responses.delete import Delete as DeleteResponse
 from ..config import (
+    ACTION_DELETE,
     ACTION_VIEW,
     ACTION_SAVE,
     ACTION_SAVE_OK,
     ACTION_SAVE_ERROR,
-    OFFSET_PARAM_NAME,
-    LIMIT_PARAM_NAME
+    ACTION_DELETE_OK,
 )
-from ..exceptions import NotFoundException, SaveException
+from ..keys import (
+    # responses
+    RESP_TYPE_KEY,
+    RESP_MESSAGE_KEY,
+    RESP_DATA_OBJ_KEY,
+    RESP_DATA_OBJECT_KEY,
+    RESP_ITEMS_KEY,
+    # requests
+    REQ_ACTION_KEY,
+    REQ_ALL_KEY,
+    REQ_ELEMENTS_KEY,
+    REQ_DATA_OBJ_KEY,
+    REQ_OFFSET_KEY,
+    REQ_LIMIT_KEY,
+)
+from ..exceptions import NotFoundException, SaveException, DeleteException
 
 
 if TYPE_CHECKING:
@@ -129,8 +145,8 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         params.update(
             {
                 # pagination
-                OFFSET_PARAM_NAME: offset,
-                LIMIT_PARAM_NAME: self.page_size,
+                REQ_OFFSET_KEY: offset,
+                REQ_LIMIT_KEY: self.page_size,
                 # args
                 "query": str(query),
                 "search": search,
@@ -149,7 +165,8 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         # return paginator
         return Pagination(
             items=self._parse_object_as(
-                kind=List[self.list_schema], data=response.get("items", [])
+                kind=List[self.list_schema],
+                data=response.get(RESP_ITEMS_KEY, []),
             ),
             container=self,
             method_name="list",
@@ -222,13 +239,19 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         """
 
         _json = self.base_params
-        _json.update({"action": ACTION_VIEW, "all": False, "elements": [id]})
+        _json.update(
+            {
+                REQ_ACTION_KEY: ACTION_VIEW,
+                REQ_ALL_KEY: False,
+                REQ_ELEMENTS_KEY: [id],
+            }
+        )
 
         res = self._client.post(url=self.action_url, json=_json, **kwargs)
         if not len(res):
             raise NotFoundException("Element not found")
         return self._parse_object_as(
-            kind=self.detail_schema, data=res[0].get("dataObj")
+            kind=self.detail_schema, data=res[0].get(RESP_DATA_OBJ_KEY)
         )
 
     @validate_call
@@ -244,14 +267,14 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         Returns:
             DetailModel: Updated object
         """
-        
+
         _json = self.base_params
         _json.update(
             {
-                "action": ACTION_SAVE,
-                "all": False,
-                "elements": [data.id],
-                "dataObj": data.model_dump(
+                REQ_ACTION_KEY: ACTION_SAVE,
+                REQ_ALL_KEY: False,
+                REQ_ELEMENTS_KEY: [data.id],
+                REQ_DATA_OBJ_KEY: data.model_dump(
                     exclude_unset=True, by_alias=True, mode="json"
                 ),
             }
@@ -262,10 +285,52 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
 
         # get first and return
         res = res[0]
+
         # if res.get("type") == ACTION_SAVE_ERROR:
-        if res.get("type") != ACTION_SAVE_OK:
-            raise SaveException(res.get("message"))
+        if res.get(RESP_TYPE_KEY) != ACTION_SAVE_OK:
+            raise SaveException(res.get(RESP_MESSAGE_KEY))
 
         return self._parse_object_as(
-            kind=self.detail_schema, data=res.get("dataObject")
+            kind=self.detail_schema, data=res.get(RESP_DATA_OBJECT_KEY)
         )
+
+    @validate_call
+    def delete(self, ids: Union[int, List[int]], **kwargs) -> DeleteResponse:
+        """Deletes an element from the given id or ids
+
+        Args:
+            ids (Union[int, List[int]]): Id or ids to delete
+
+        Raises:
+            DeleteException: If something was wrong
+            DeleteException: [description]
+
+        Returns:
+            DeleteResponse: Delete request response
+        """
+
+        if isinstance(ids, int):
+            ids = [ids]
+
+        _json = self.base_params
+        _json.update(
+            {
+                REQ_ACTION_KEY: ACTION_DELETE,
+                REQ_ALL_KEY: False,
+                REQ_ELEMENTS_KEY: ids,
+                REQ_DATA_OBJ_KEY: {"_confirm": True, "id": list(map(str, ids))},
+            }
+        )
+
+        res = self._client.post(url=self.action_url, json=_json, **kwargs)
+        if not len(res):
+            raise DeleteException("Something was wrong")
+
+        # get first and return
+        res = res[0]
+
+        if res.get(RESP_TYPE_KEY) != ACTION_DELETE_OK:
+            raise DeleteException(res.get(RESP_MESSAGE_KEY))
+
+        # parse and return
+        return self._parse_object_as(kind=DeleteResponse, data=res)

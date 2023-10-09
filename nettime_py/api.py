@@ -10,7 +10,15 @@ from pydantic import validate_call
 from .exceptions import AuthException, ConfigException, UrlException
 from .containers.employee import Employee
 from .containers.reader import Reader
-from .config import Defaults, TASK_COMPLETED_KEY
+from .config import Defaults
+from .keys import (
+    REQ_TASK_ID_KEY,
+    RESP_TASK_COMPLETED_KEY,
+    RESP_OK_KEY,
+    RESP_MESSAGE_KEY,
+    RESP_TASK_ID_KEY,
+    RESP_ITEMS_KEY
+)
 from .schemas.app_settings import AppSettings
 from .schemas.app_index import AppIndex
 
@@ -253,8 +261,10 @@ class NetTimeAPI:
         Returns:
             Any: JSON response or JSON Task result.
         """
-        if isinstance(result, dict) and result.get("taskId", None):
-            result = self.get_task_response(task_id=result.get("taskId"))
+        if isinstance(result, dict) and result.get(RESP_TASK_ID_KEY, None):
+            result = self.get_task_response(
+                task_id=result.get(RESP_TASK_ID_KEY)
+            )
 
         # return json response
         return result
@@ -273,10 +283,8 @@ class NetTimeAPI:
         # consulting nettime
         response = self.post(path="/api/login", json=data)
 
-        if not response.get("ok", None):
-            raise AuthException(
-                {"status": 401, "detail": response.get("message")}
-            )
+        if not response.get(RESP_OK_KEY, None):
+            raise AuthException(response.get(RESP_MESSAGE_KEY))
 
         self._set_user_session(access_token=response.get("access_token"))
 
@@ -302,7 +310,7 @@ class NetTimeAPI:
         """Get status of an async task."""
 
         # prepare task parameters
-        params = {"taskid": task_id}
+        params = {REQ_TASK_ID_KEY: task_id}
 
         # request.get -> json
         return self.get(path="/api/async/status", params=params, **kwargs)
@@ -312,12 +320,12 @@ class NetTimeAPI:
 
         # ensure the task is complete
         task_status = self.get_task_status(task_id=task_id)
-        while not task_status.get(TASK_COMPLETED_KEY, False):
+        while not task_status.get(RESP_TASK_COMPLETED_KEY, False):
             sleep(self._defaults.TASK_LOOP_TIME)
             task_status = self.get_task_status(task_id=task_id)
 
         # prepare task parameters
-        params = {"taskid": task_id}
+        params = {REQ_TASK_ID_KEY: task_id}
 
         # request.get -> json
         return self.get(path="/api/async/response", params=params)

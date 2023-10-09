@@ -2,13 +2,6 @@ from datetime import date
 from typing import Any, Dict
 from pydantic_settings import BaseSettings
 
-# api
-TASK_COMPLETED_KEY = "completed"
-
-# pagination
-OFFSET_PARAM_NAME = "pageStartIndex"
-LIMIT_PARAM_NAME = "pageSize"
-
 # container exec
 ACTION_DELETE = "Delete"
 ACTION_COPY = "Copy"
@@ -19,7 +12,7 @@ ACTION_SAVE = "Save"
 # save result types
 ACTION_SAVE_OK = 6
 ACTION_SAVE_ERROR = 2
-
+ACTION_DELETE_OK = 8
 
 class Defaults(BaseSettings):
     TASK_LOOP_TIME: float = 0.5
