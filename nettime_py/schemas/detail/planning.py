@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 from pydantic import BaseModel, Field
 from .base import Base
 
@@ -67,7 +67,9 @@ class Planning(Base):
     nodes_source: Optional[List[DataLabel]] = Field(
         default=None, alias="nodesSource"
     )
-    employee: Optional[int] = Field(default=None, alias="employee")
+    employee: Optional[Union[int, List[int]]] = Field(
+        default=None, alias="employee"
+    )
     time_intervals: Optional[TimeInterval] = Field(
         default=None, alias="timeIntervals"
     )

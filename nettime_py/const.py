@@ -23,6 +23,8 @@ ACTION_COPY = "Copy"
 ACTION_EDIT_FORM = "editForm"
 ACTION_VIEW = "View"
 ACTION_SAVE = "Save"
+ACTION_SAVE_MASSIVE = "SaveMass"
+ACTION_ADD_PLANNING = "NewPlanificacion"
 
 # save result types
 ACTION_SAVE_OK = 6

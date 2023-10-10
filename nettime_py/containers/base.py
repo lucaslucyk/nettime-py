@@ -24,6 +24,7 @@ from ..const import (
     ACTION_DELETE,
     ACTION_VIEW,
     ACTION_SAVE,
+    ACTION_SAVE_MASSIVE,
     ACTION_SAVE_OK,
     ACTION_SAVE_ERROR,
     ACTION_DELETE_OK,
@@ -253,31 +254,26 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
             kind=self.detail_schema, data=res[0].get(RESP_DATA_OBJ_KEY)
         )
 
-    @validate_call
-    def save(self, data: DetailModel, **kwargs) -> DetailModel:
-        """Save an element to netTime
-
-        Args:
-            data (DetailModel): Element to save
-
-        Raises:
-            SaveException: If something was wrong
-
-        Returns:
-            DetailModel: Updated object
-        """
-
+    def _save(
+        self,
+        data: DetailModel,
+        action: str,
+        elements: List[int],
+        all_: bool = False,
+        **kwargs
+    ) -> DetailModel:
         _json = self.base_params
         _json.update(
             {
-                REQ_ACTION_KEY: ACTION_SAVE,
-                REQ_ALL_KEY: False,
-                REQ_ELEMENTS_KEY: [data.id],
+                REQ_ACTION_KEY: action,
+                REQ_ALL_KEY: all_,
+                REQ_ELEMENTS_KEY: elements,
                 REQ_DATA_OBJ_KEY: data.model_dump(
                     exclude_unset=True, by_alias=True, mode="json"
                 ),
             }
         )
+
         res = self._client.post(url=self.action_url, json=_json, **kwargs)
         if not len(res):
             raise SaveException("Something was wrong")
@@ -293,8 +289,55 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
             kind=self.detail_schema, data=res.get(RESP_DATA_OBJECT_KEY)
         )
 
+
     @validate_call
-    def delete(self, ids: Union[int, List[int]], **kwargs) -> DeleteResponse:
+    def save(self, data: DetailModel, **kwargs) -> DetailModel:
+        """Save an element to netTime
+
+        Args:
+            data (DetailModel): Element to save
+
+        Raises:
+            SaveException: If something was wrong
+
+        Returns:
+            DetailModel: Updated object
+        """
+
+        return self._save(
+            data=data,
+            action=ACTION_SAVE,
+            elements=[data.id],
+            all_=False,
+            **kwargs
+        )
+    
+
+    @validate_call
+    def save_massive(
+        self,
+        data: DetailModel,
+        elements: List[int],
+        all_: bool = False,
+        **kwargs
+    ) -> DetailModel:
+        
+        return self._save(
+            data=data,
+            action=ACTION_SAVE_MASSIVE,
+            elements=elements,
+            all_=all_,
+            **kwargs
+        )
+
+
+    @validate_call
+    def delete(
+        self,
+        ids: Union[int, List[int]],
+        all_: bool = False,
+        **kwargs
+    ) -> DeleteResponse:
         """Deletes an element from the given id or ids
 
         Args:
@@ -315,7 +358,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         _json.update(
             {
                 REQ_ACTION_KEY: ACTION_DELETE,
-                REQ_ALL_KEY: False,
+                REQ_ALL_KEY: all_,
                 REQ_ELEMENTS_KEY: ids,
                 REQ_DATA_OBJ_KEY: {"_confirm": True, "id": list(map(str, ids))},
             }
