@@ -11,7 +11,7 @@ from .exceptions import AuthException, ConfigException, UrlException
 from .containers.employee import Employee
 from .containers.reader import Reader
 from .config import Defaults
-from .keys import (
+from .const import (
     REQ_TASK_ID_KEY,
     RESP_TASK_COMPLETED_KEY,
     RESP_OK_KEY,

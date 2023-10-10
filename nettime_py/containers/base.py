@@ -5,15 +5,8 @@ from .query import Query
 from ..pagination import LimitOffsetPagination as Pagination
 from ..schemas.base import ListModel, DetailModel
 from ..schemas.responses.delete import Delete as DeleteResponse
-from ..config import (
-    ACTION_DELETE,
-    ACTION_VIEW,
-    ACTION_SAVE,
-    ACTION_SAVE_OK,
-    ACTION_SAVE_ERROR,
-    ACTION_DELETE_OK,
-)
-from ..keys import (
+from ..exceptions import NotFoundException, SaveException, DeleteException
+from ..const import (
     # responses
     RESP_TYPE_KEY,
     RESP_MESSAGE_KEY,
@@ -27,8 +20,14 @@ from ..keys import (
     REQ_DATA_OBJ_KEY,
     REQ_OFFSET_KEY,
     REQ_LIMIT_KEY,
+    # actions
+    ACTION_DELETE,
+    ACTION_VIEW,
+    ACTION_SAVE,
+    ACTION_SAVE_OK,
+    ACTION_SAVE_ERROR,
+    ACTION_DELETE_OK,
 )
-from ..exceptions import NotFoundException, SaveException, DeleteException
 
 
 if TYPE_CHECKING:

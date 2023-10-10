@@ -16,3 +16,15 @@ REQ_TASK_ID_KEY = "taskId"
 REQ_OFFSET_KEY = "pageStartIndex"
 REQ_LIMIT_KEY = "pageSize"
 RESP_ITEMS_KEY = "items"
+
+# container exec
+ACTION_DELETE = "Delete"
+ACTION_COPY = "Copy"
+ACTION_EDIT_FORM = "editForm"
+ACTION_VIEW = "View"
+ACTION_SAVE = "Save"
+
+# save result types
+ACTION_SAVE_OK = 6
+ACTION_SAVE_ERROR = 2
+ACTION_DELETE_OK = 8
