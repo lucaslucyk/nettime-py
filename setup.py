@@ -58,7 +58,7 @@ setup(
         "pydantic-core>=2.6.3",
         "pydantic-settings>=2.0.3",
     ],
-    url="https://gitlab.com/spec-sa-ar/nettime-py",
+    url="https://github.com/lucaslucyk/nettime-py",
     author="Lucas Lucyk",
     author_email="lucaslucyk@gmail.com",
 )
