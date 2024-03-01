@@ -1,6 +1,5 @@
 from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field
-from traitlets import default
 from .base import Base
 
 
