@@ -1,6 +1,6 @@
 from .base import ContainerBase
-from ..schemas.list.readers import Reader as ListSchema
-from ..schemas.detail.readers import Reader as DetailSchema
+from .schemas.list.readers import Reader as ListSchema
+from .schemas.detail.readers import Reader as DetailSchema
 
 
 # TODO: create and replace view model

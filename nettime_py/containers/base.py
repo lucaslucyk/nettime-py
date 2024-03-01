@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from pydantic import TypeAdapter, validate_call
 from typing import TYPE_CHECKING, Any, Generator, Generic, List, Optional, Union
 from .query import Query
-from ..pagination import LimitOffsetPagination as Pagination
-from ..schemas.base import ListModel, DetailModel
-from ..schemas.responses.delete import Delete as DeleteResponse
+from .paginator import ContainerPaginator as Paginator
+from .schemas.base import ListModel, DetailModel
+from .schemas.responses.delete import Delete as DeleteResponse
 from ..exceptions import NotFoundException, SaveException, DeleteException
 from ..const import (
     # responses
@@ -124,7 +124,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         desc: bool = False,
         params: dict = {},
         **kwargs
-    ) -> Pagination[ListModel]:
+    ) -> Paginator[ListModel]:
         """List elements of a container
 
         Args:
@@ -138,7 +138,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
                 Custom params to send to `client.get` method. Defaults to {}.
 
         Returns:
-            Pagination[ListModel]: Pagination of instanced ListModel.
+            Paginator[ListModel]: Paginator of instanced ListModel.
         """
 
         # update custom inner params with params and page keys
@@ -163,7 +163,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         response = self._client.get(url=self.list_url, params=_params, **kwargs)
 
         # return paginator
-        return Pagination(
+        return Paginator(
             items=self._parse_object_as(
                 kind=List[self.list_schema],
                 data=response.get(RESP_ITEMS_KEY, []),
@@ -181,7 +181,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         search: str = "",
         desc: bool = False,
         params: dict = {},
-        page: Optional[Pagination] = None,
+        page: Optional[Paginator] = None,
     ) -> Generator[ListModel, Any, None]:
         """Get all elements of a container using `list` method.
 
@@ -193,8 +193,8 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
             desc (bool, optional): Desc param. Defaults to False.
             params (dict, optional):
                 Custom params to send to `client.get` method. Defaults to {}.
-            page (Optional[Pagination], optional):
-                Optional Pagination object to start. Defaults to None.
+            page (Optional[Paginator], optional):
+                Optional Paginator object to start. Defaults to None.
 
         Yields:
             Generator[ListModel, Any, None]: Iterator of ListModel instances.
