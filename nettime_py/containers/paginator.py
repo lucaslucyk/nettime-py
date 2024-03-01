@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Generator, Generic, Iterable, List
-from .schemas.base import ListModel
+from ..schemas.containers.base import ListModel
 
 if TYPE_CHECKING:
     from .base import ContainerBase

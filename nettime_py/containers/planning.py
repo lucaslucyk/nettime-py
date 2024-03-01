@@ -1,6 +1,6 @@
 from .base import ContainerBase
-from .schemas.list.planning import Planning as ListSchema
-from .schemas.detail.planning import Planning as DetailSchema
+from ..schemas.containers.list.planning import Planning as ListSchema
+from ..schemas.containers.detail.planning import Planning as DetailSchema
 
 
 class Planning(ContainerBase[ListSchema, DetailSchema]):

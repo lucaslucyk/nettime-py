@@ -3,8 +3,8 @@ from pydantic import TypeAdapter, validate_call
 from typing import TYPE_CHECKING, Any, Generator, Generic, List, Optional, Union
 from .query import Query
 from .paginator import ContainerPaginator as Paginator
-from .schemas.base import ListModel, DetailModel
-from .schemas.responses.delete import Delete as DeleteResponse
+from ..schemas.containers.base import ListModel, DetailModel
+from ..schemas.containers.responses.delete import Delete as DeleteResponse
 from ..exceptions import NotFoundException, SaveException, DeleteException
 from ..const import (
     # responses
