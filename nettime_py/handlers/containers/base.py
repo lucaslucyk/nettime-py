@@ -3,10 +3,16 @@ from pydantic import TypeAdapter, validate_call
 from typing import TYPE_CHECKING, Any, Generator, Generic, List, Optional, Union
 from .query import Query
 from .paginator import ContainerPaginator as Paginator
-from ..schemas.containers.base import ListModel, DetailModel
-from ..schemas.containers.responses.delete import Delete as DeleteResponse
-from ..exceptions import NotFoundException, SaveException, DeleteException
-from ..const import (
+from nettime_py.schemas.containers.base import ListModel, DetailModel
+from nettime_py.schemas.containers.responses.delete import (
+    Delete as DeleteResponse,
+)
+from nettime_py.exceptions import (
+    NotFoundException,
+    SaveException,
+    DeleteException,
+)
+from nettime_py.const import (
     # responses
     RESP_TYPE_KEY,
     RESP_MESSAGE_KEY,
@@ -32,7 +38,7 @@ from ..const import (
 
 
 if TYPE_CHECKING:
-    from ..api import NetTimeAPI
+    from nettime_py.api import NetTimeAPI
 
 
 class ContainerBase(Generic[ListModel, DetailModel], ABC):
@@ -51,28 +57,23 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
 
     @property
     @abstractmethod
-    def list_schema(self) -> type[ListModel]:
-        ...
+    def list_schema(self) -> type[ListModel]: ...
 
     @property
     @abstractmethod
-    def detail_schema(self) -> type[DetailModel]:
-        ...
+    def detail_schema(self) -> type[DetailModel]: ...
 
     @property
     @abstractmethod
-    def path_attribute(self) -> str:
-        ...
+    def path_attribute(self) -> str: ...
 
     @property
     @abstractmethod
-    def container_name(self) -> str:
-        ...
+    def container_name(self) -> str: ...
 
     @property
     @abstractmethod
-    def order(self) -> str:
-        ...
+    def order(self) -> str: ...
 
     @property
     def base_params(self) -> dict:
@@ -289,7 +290,6 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
             kind=self.detail_schema, data=res.get(RESP_DATA_OBJECT_KEY)
         )
 
-
     @validate_call
     def save(self, data: DetailModel, **kwargs) -> DetailModel:
         """Save an element to netTime
@@ -311,7 +311,6 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
             all_=False,
             **kwargs
         )
-    
 
     @validate_call
     def save_massive(
@@ -321,7 +320,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         all_: bool = False,
         **kwargs
     ) -> DetailModel:
-        
+
         return self._save(
             data=data,
             action=ACTION_SAVE_MASSIVE,
@@ -330,13 +329,9 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
             **kwargs
         )
 
-
     @validate_call
     def delete(
-        self,
-        ids: Union[int, List[int]],
-        all_: bool = False,
-        **kwargs
+        self, ids: Union[int, List[int]], all_: bool = False, **kwargs
     ) -> DeleteResponse:
         """Deletes an element from the given id or ids
 

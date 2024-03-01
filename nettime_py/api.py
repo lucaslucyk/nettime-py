@@ -8,10 +8,7 @@ from pydantic import validate_call
 
 
 from .exceptions import AuthException, ConfigException, UrlException
-# from .containers.employee import Employee
-# from .containers.reader import Reader
-# from .containers.planning import Planning
-from .containers import Employee, Reader, Planning
+from nettime_py.handlers.containers import Employee, Reader, Planning
 from .config import Defaults
 from .const import (
     REQ_TASK_ID_KEY,
@@ -19,10 +16,10 @@ from .const import (
     RESP_OK_KEY,
     RESP_MESSAGE_KEY,
     RESP_TASK_ID_KEY,
-    RESP_ITEMS_KEY
+    RESP_ITEMS_KEY,
 )
-from .schemas.app_settings import AppSettings
-from .schemas.app_index import AppIndex
+from nettime_py.schemas.app_settings import AppSettings
+from nettime_py.schemas.app_index import AppIndex
 
 
 __all__ = ["NetTimeAPI"]
@@ -351,7 +348,7 @@ class NetTimeAPI:
     @property
     def readers(self) -> Reader:
         return Reader(client=self)
-    
+
     @property
     def plannings(self) -> Planning:
         return Planning(client=self)

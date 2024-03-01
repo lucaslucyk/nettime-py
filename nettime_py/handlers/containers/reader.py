@@ -1,6 +1,6 @@
 from .base import ContainerBase
-from ..schemas.containers.list.readers import Reader as ListSchema
-from ..schemas.containers.detail.readers import Reader as DetailSchema
+from nettime_py.schemas.containers.list.readers import Reader as ListSchema
+from nettime_py.schemas.containers.detail.readers import Reader as DetailSchema
 
 
 # TODO: create and replace view model

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Generator, Generic, Iterable, List
-from ..schemas.containers.base import ListModel
+from nettime_py.schemas.containers.base import ListModel
 
 if TYPE_CHECKING:
     from .base import ContainerBase

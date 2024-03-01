@@ -1,8 +1,8 @@
 from pydantic import validate_call
 from .base import ContainerBase
-from ..schemas.containers.list.employees import Employee as ListSchema
-from ..schemas.containers.detail.employees import Employee as DetailSchema
-from ..schemas.containers.detail import Planning
+from nettime_py.schemas.containers.list.employees import Employee as ListSchema
+from nettime_py.schemas.containers.detail.employees import Employee as DetailSchema
+from nettime_py.schemas.containers.detail import Planning
 
 
 class Employee(ContainerBase[ListSchema, DetailSchema]):
