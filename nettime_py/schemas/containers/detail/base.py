@@ -1,11 +1,10 @@
 from typing import Optional
 from datetime import datetime
 from pydantic import Field
-from ..base import Base as BaseSchema
+from nettime_py.schemas.containers.base import Base as BaseSchema
 
 
 class Base(BaseSchema):
-    # id: Optional[int] = Field(default=-1, alias="id")
     c_: Optional[str] = Field(default="", alias="_c_")
     created: Optional[datetime] = Field(default=None, alias="created")
     modified: Optional[datetime] = Field(default=None, alias="modified")

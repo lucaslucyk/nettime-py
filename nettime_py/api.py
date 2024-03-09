@@ -6,6 +6,8 @@ from requests import Session, Response
 from requests.exceptions import HTTPError
 from pydantic import validate_call
 
+from nettime_py.handlers.clockings import Clockings
+
 
 from .exceptions import AuthException, ConfigException, UrlException
 from nettime_py.handlers.containers import Employee, Reader, Planning
@@ -352,3 +354,7 @@ class NetTimeAPI:
     @property
     def plannings(self) -> Planning:
         return Planning(client=self)
+
+    @property
+    def clockings(self) -> Clockings:
+        return Clockings(client=self)
