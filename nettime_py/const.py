@@ -1,32 +1,38 @@
-# responses
-RESP_TYPE_KEY = "type"
-RESP_MESSAGE_KEY = "message"
-RESP_DATA_OBJ_KEY = "dataObj"
-RESP_DATA_OBJECT_KEY = "dataObject"
-RESP_TASK_COMPLETED_KEY = "completed"
-RESP_OK_KEY = "ok"
-RESP_TASK_ID_KEY = "taskId"
+from enum import Enum
 
-# requests
-REQ_ACTION_KEY = "action"
-REQ_ALL_KEY = "all"
-REQ_ELEMENTS_KEY = "elements"
-REQ_DATA_OBJ_KEY = "dataObj"
-REQ_TASK_ID_KEY = "taskId"
-REQ_OFFSET_KEY = "pageStartIndex"
-REQ_LIMIT_KEY = "pageSize"
-RESP_ITEMS_KEY = "items"
 
-# container exec
-ACTION_DELETE = "Delete"
-ACTION_COPY = "Copy"
-ACTION_EDIT_FORM = "editForm"
-ACTION_VIEW = "View"
-ACTION_SAVE = "Save"
-ACTION_SAVE_MASSIVE = "SaveMass"
-ACTION_ADD_PLANNING = "NewPlanificacion"
+class ResponseKey(str, Enum):
+    TYPE = "type"
+    MESSAGE = "message"
+    DATA_OBJ = "dataObj"
+    DATA_OBJECT = "dataObject"
+    TASK_COMPLETED = "completed"
+    OK = "ok"
+    TASK_ID = "taskId"
+    ITEMS = "items"
 
-# save result types
-ACTION_SAVE_OK = 6
-ACTION_SAVE_ERROR = 2
-ACTION_DELETE_OK = 8
+
+class RequestKey(str, Enum):
+    ACTION = "action"
+    ALL = "all"
+    ELEMENTS = "elements"
+    DATA_OBJ = "dataObj"
+    TASK_ID = "taskId"
+    OFFSET = "pageStartIndex"
+    LIMIT = "pageSize"
+
+
+class ContainerAction(str, Enum):
+    DELETE = "Delete"
+    COPY = "Copy"
+    EDIT_FORM = "editForm"
+    VIEW = "View"
+    SAVE = "Save"
+    SAVE_MASSIVE = "SaveMass"
+    ADD_PLANNING = "NewPlanificacion"
+
+
+class ActionResult(int, Enum):
+    SAVE_OK = 6
+    SAVE_ERROR = 2
+    DELETE_OK = 8

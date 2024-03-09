@@ -13,29 +13,11 @@ from nettime_py.exceptions import (
     DeleteException,
 )
 from nettime_py.const import (
-    # responses
-    RESP_TYPE_KEY,
-    RESP_MESSAGE_KEY,
-    RESP_DATA_OBJ_KEY,
-    RESP_DATA_OBJECT_KEY,
-    RESP_ITEMS_KEY,
-    # requests
-    REQ_ACTION_KEY,
-    REQ_ALL_KEY,
-    REQ_ELEMENTS_KEY,
-    REQ_DATA_OBJ_KEY,
-    REQ_OFFSET_KEY,
-    REQ_LIMIT_KEY,
-    # actions
-    ACTION_DELETE,
-    ACTION_VIEW,
-    ACTION_SAVE,
-    ACTION_SAVE_MASSIVE,
-    ACTION_SAVE_OK,
-    ACTION_SAVE_ERROR,
-    ACTION_DELETE_OK,
+    ResponseKey,
+    RequestKey,
+    ContainerAction,
+    ActionResult,
 )
-
 
 if TYPE_CHECKING:
     from nettime_py.api import NetTimeAPI
@@ -146,8 +128,8 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         params.update(
             {
                 # pagination
-                REQ_OFFSET_KEY: offset,
-                REQ_LIMIT_KEY: self.page_size,
+                RequestKey.OFFSET: offset,
+                RequestKey.LIMIT: self.page_size,
                 # args
                 "query": str(query),
                 "search": search,
@@ -167,7 +149,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         return Paginator(
             items=self._parse_object_as(
                 kind=List[self.list_schema],
-                data=response.get(RESP_ITEMS_KEY, []),
+                data=response.get(ResponseKey.ITEMS, []),
             ),
             container=self,
             method_name="list",
@@ -242,9 +224,9 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         _json = self.base_params
         _json.update(
             {
-                REQ_ACTION_KEY: ACTION_VIEW,
-                REQ_ALL_KEY: False,
-                REQ_ELEMENTS_KEY: [id],
+                RequestKey.ACTION: ContainerAction.VIEW,
+                RequestKey.ALL: False,
+                RequestKey.ELEMENTS: [id],
             }
         )
 
@@ -252,7 +234,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         if not len(res):
             raise NotFoundException("Element not found")
         return self._parse_object_as(
-            kind=self.detail_schema, data=res[0].get(RESP_DATA_OBJ_KEY)
+            kind=self.detail_schema, data=res[0].get(ResponseKey.DATA_OBJ)
         )
 
     def _save(
@@ -266,10 +248,10 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         _json = self.base_params
         _json.update(
             {
-                REQ_ACTION_KEY: action,
-                REQ_ALL_KEY: all_,
-                REQ_ELEMENTS_KEY: elements,
-                REQ_DATA_OBJ_KEY: data.model_dump(
+                RequestKey.ACTION: action,
+                RequestKey.ALL: all_,
+                RequestKey.ELEMENTS: elements,
+                RequestKey.DATA_OBJ: data.model_dump(
                     exclude_unset=True, by_alias=True, mode="json"
                 ),
             }
@@ -282,12 +264,12 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         # get first and return
         res = res[0]
 
-        # if res.get("type") == ACTION_SAVE_ERROR:
-        if res.get(RESP_TYPE_KEY) != ACTION_SAVE_OK:
-            raise SaveException(res.get(RESP_MESSAGE_KEY))
+        if res.get(ResponseKey.TYPE) != ActionResult.SAVE_OK:
+            raise SaveException(res.get(ResponseKey.MESSAGE))
 
         return self._parse_object_as(
-            kind=self.detail_schema, data=res.get(RESP_DATA_OBJECT_KEY)
+            kind=self.detail_schema,
+            data=res.get(ResponseKey.DATA_OBJECT),
         )
 
     @validate_call
@@ -306,7 +288,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
 
         return self._save(
             data=data,
-            action=ACTION_SAVE,
+            action=ContainerAction.SAVE,
             elements=[data.id],
             all_=False,
             **kwargs
@@ -323,7 +305,7 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
 
         return self._save(
             data=data,
-            action=ACTION_SAVE_MASSIVE,
+            action=ContainerAction.SAVE_MASSIVE,
             elements=elements,
             all_=all_,
             **kwargs
@@ -352,10 +334,15 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         _json = self.base_params
         _json.update(
             {
-                REQ_ACTION_KEY: ACTION_DELETE,
-                REQ_ALL_KEY: all_,
-                REQ_ELEMENTS_KEY: ids,
-                REQ_DATA_OBJ_KEY: {"_confirm": True, "id": list(map(str, ids))},
+                RequestKey.ACTION: ContainerAction.DELETE,
+                RequestKey.ALL: all_,
+                RequestKey.ELEMENTS: ids,
+                RequestKey.DATA_OBJ: {
+                    "_confirm": True,
+                    "id": list(
+                        map(str, ids),
+                    ),
+                },
             }
         )
 
@@ -366,8 +353,8 @@ class ContainerBase(Generic[ListModel, DetailModel], ABC):
         # get first and return
         res = res[0]
 
-        if res.get(RESP_TYPE_KEY) != ACTION_DELETE_OK:
-            raise DeleteException(res.get(RESP_MESSAGE_KEY))
+        if res.get(ResponseKey.TYPE) != ActionResult.DELETE_OK:
+            raise DeleteException(res.get(ResponseKey.MESSAGE))
 
         # parse and return
         return self._parse_object_as(kind=DeleteResponse, data=res)
