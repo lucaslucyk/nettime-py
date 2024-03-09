@@ -38,8 +38,10 @@ class Clocking(BaseSchema):
     id_reader: Optional[int] = Field(default=None, alias="idReader")
     user: Optional[str] = Field(default=None, alias="user")
     ip: Optional[str] = Field(default=None, alias="ip")
+    lat: Optional[float] = Field(default=None, alias="lat")
+    lon: Optional[float] = Field(default=None, alias="lon")
     status: Optional[ClockingStatus] = Field(default=None, alias="status")
-    app: Optional[bool]
+    app: Optional[bool] = Field(default=None, alias="app")
     num_documents: Optional[int] = Field(default=None, alias="numDocuments")
 
 
