@@ -7,9 +7,9 @@ Python API client for netTime (SPEC, SA).
 
 
 ## Project Status
-⚠️ **_Warning_**: This project is currently in __*development phase*__.
 
-This project is in an early stage of development and may contain bugs. It is not recommended for use in production environments.
+> [!WARNING]
+> This project is currently in __*development phase*__ and may contain bugs. It is not recommended for use in production environments.
 
 
 ## Why use `nettime-py`?
